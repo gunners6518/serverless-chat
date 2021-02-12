@@ -1,70 +1,113 @@
-# Getting Started with Create React App
+# 概要
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+team のクローンアプリ(チャット部分だだけ)を作ったので、共有。
+解説も少しばかり咥えています。
 
-## Available Scripts
+デプロイ：https://teams-clone.netlify.app/
+GitHub：https://github.com/gunners6518/teams-clone
 
-In the project directory, you can run:
+## 使用技術
 
-### `yarn start`
+・React
+・ChatEngine（チャットのサーバーとして）
+・react-chat-engine（チャット機能のライブラリ）
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 実装した機能
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+・チャットが自分側と相手側で左右に分かれて表示される
+・チャットでの既読判定されている
+・外部のユーザー情報と連携したログインフォーム（chat engine）
+・チャット送信機能（画像送信も可能）
 
-### `yarn test`
+# 機能の解説
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## プロジェクトの準備
 
-### `yarn build`
+・react(react-create-app にて)インストール
+・react-chat-engine インストールして下さい。
+https://github.com/alamorre/react-chat-engine
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+・App.css をコピー
+https://github.com/gunners6518/teams-clone/blob/master/src/App.css
+css は本プロジェクトでは扱わない為、参考にしてください。
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## チャットが自分側と相手側で左右に分かれて表示される
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+react-chat-engine を使ってチャットを作ります。
 
-### `yarn eject`
+### ChatEngine でデータをつくる
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+まずは ChatEngine のサイトから自分たちのチャットのデータを作ります。
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+https://chatengine.io/
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+sign in して APIKey を取得し、Users、Chats を作成しましょう。
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### react-chat-engine を使って基本的なチャット機能を実装する
 
-## Learn More
+react-chat-engine を使ってチャット機能を作っていきます。
+まず、`yarn add react-chat-engine`します。
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+react-chat-engine のドキュメントはこちらです。
+https://github.com/alamorre/react-chat-engine#readme
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+EXAMPLE では
 
-### Code Splitting
+```jsx
+import React from "react";
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+import { ChatEngine } from "react-chat-engine";
 
-### Analyzing the Bundle Size
+export function App() {
+  return <ChatEngine publicKey={""} userName={""} userSecret={""} />;
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+この様に ChatEngine でコンポーネントを使い、オプションで props を入れていく事で、先ほど ChatEngine からチャットデータを表示してくれる様です。　
+この時点で最低限のチャットは表示されています。
 
-### Making a Progressive Web App
+今回は自分と他人でチャットを左右に振り分けたいので、チャットフィード部分（チャットの表示部分）をカスタマイズします。
+ChatEngine の renderChatFeed を使う事で、チャット部分に react コンポーネントをレンダリングしていきましょう。
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+参考：https://chatengine.io/docs/customize_ui
+Render Chat Feed 部分
 
-### Advanced Configuration
+```jsx
+export const App = () => {
+  const projectID = "xxxx";
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+  return (
+    <ChatEngine
+      height="100vh"
+      projectID={projectID}
+      userName="xxx"
+      userSecret="xxx"
+      renderChatFeed={(chatAppProps) => <ChatFeed {...chatAppProps} />}
+    />
+  );
+};
+```
 
-### Deployment
+renderChatFeed の中身は ChatFeed コンポーネントにて作成していきます。
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### 自分側と相手側に分けてチャット表示用のコンポーネントを作る
 
-### `yarn build` fails to minify
+components/chatFeed.jsx を作成します。
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+まずは renderChsatFeed から受け取った props の値を確かめてみましょう。
+
+```jsx
+export const ChatFeed = (props) => {
+  console.log(prpps);
+  return <div className="chat-feed">コンソール</div>;
+};
+```
+
+するとこのうように表示されるはずです。
+[]({"A?":"B","a":5,"d":"B","h":"www.canva.com","c":"DAEV4UnFN3s","i":"P72YIyGuxRVlahtgKGPmgw","b":1613093137124,"A":[{"A?":"J","A":290,"B":1054.746319557711,"D":295.25368044228844,"C":28.611048740706224,"a":{"D":150.7,"C":150.7},"b":[{"A":"M0 0h150.7v150.7H0z","B":{"C":"#919191"}}],"c":{"A":{"A":6,"B":6,"D":138.7,"C":138.7},"B":884.8713778901556,"C":74.90977422709992,"D":"A","E":"A"}}],"B":1920,"C":1080})
+
+## チャット送信機能（画像送信も可能）
+
+## チャットでの既読判定されている
+
+## 外部のユーザー情報と連携したログインフォーム（chat engine）
