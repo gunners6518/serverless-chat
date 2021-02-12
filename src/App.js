@@ -23,5 +23,3 @@ export const App = () => {
     />
   );
 };
-
-// infinite scroll, logout, more customizations...
