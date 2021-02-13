@@ -140,7 +140,7 @@
 
 .read-receipts {
   position: relative;
-  bottom: 6px;
+  bottom: 2px;
 }
 
 .read-receipt {
@@ -190,6 +190,11 @@
   border: 1px solid white;
   padding: 0px 18px;
   cursor: pointer;
+}
+
+.message-function {
+  width: 16px;
+  height: 16px;
 }
 
 .send-icon {

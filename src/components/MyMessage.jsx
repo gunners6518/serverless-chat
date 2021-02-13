@@ -1,5 +1,7 @@
-export const MyMessage = ({ message }) => {
-  //添付ファイルがある場合
+import { MessageFunction } from "./MessageFunction";
+export const MyMessage = (props) => {
+  const { message } = props;
+
   if (message.attachments && message.attachments.length > 0) {
     return (
       <img
@@ -11,16 +13,20 @@ export const MyMessage = ({ message }) => {
     );
   }
   return (
-    <div
-      className="message"
-      style={{
-        float: "right",
-        marginRight: "18px",
-        color: "white",
-        backgroundColor: "#3B2A50",
-      }}
-    >
-      {message.text}
-    </div>
+    <>
+      <MessageFunction props={props} />
+      <div
+        className="message"
+        style={{
+          float: "right",
+          marginRight: "18px",
+          color: "white",
+          backgroundColor: "#3B2A50",
+        }}
+      >
+        {message.text}
+      </div>
+      {/* <Button onClick={handleDelete(message)}>delete</Button> */}
+    </>
   );
 };
