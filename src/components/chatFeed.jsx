@@ -15,7 +15,7 @@ export const ChatFeed = (props) => {
       const message = messages[key];
       const lastMessageKey = index === 0 ? null : keys[index - 1];
       //sender＝送信者　messagesのAPIにあるデータ
-      const isMyMessage = userName === message?.sender.username;
+      const isMyMessage = userName === message.sender.username;
 
       // 既読判定
       const renderReadReceipts = (message, isMyMessage) =>

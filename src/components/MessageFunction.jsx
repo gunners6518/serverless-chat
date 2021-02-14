@@ -12,7 +12,6 @@ export const MessageFunction = (props) => {
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
-    console.log("aaa");
   };
 
   const handleClose = () => {
@@ -24,7 +23,7 @@ export const MessageFunction = (props) => {
 
   //メッセージ削除
   const handleDelete = (e) => {
-    deleteMessage(props.props, activeChat, message.id);
+    deleteMessage(creds, activeChat, message.id);
   };
 
   return (
@@ -51,7 +50,7 @@ export const MessageFunction = (props) => {
           onClose={handleClose}
         >
           <MenuItem onClick={handleClose}>Edit</MenuItem>
-          <MenuItem onClick={handleDelete}>Delete</MenuItem>
+          <MenuItem onClick={(handleClose, handleDelete)}>Delete</MenuItem>
         </Menu>
       </div>
     </div>
